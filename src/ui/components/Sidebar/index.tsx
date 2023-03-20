@@ -1,14 +1,18 @@
-import { BaseSyntheticEvent, memo, useState } from 'react';
+import { BaseSyntheticEvent, memo, useRef, useState } from 'react';
 import DropdownSideBar from './dropdown';
 import { methodGet } from '../../../api/methods';
 import { getCityByName } from '../../../api/paths';
 import { City, CityConvert } from '../../../models/City';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCityForecast } from '../../../redux/citiesState';
+import { fetchCityForecast, modifyOrder } from '../../../redux/citiesState';
 import { RootState } from '../../../redux/store';
+import Geo from './geo';
 
 const Sidebar = memo(() => {
   const [citiesSearch, setCitiesSearch] = useState<City[]>([]);
+  const dragItem = useRef<number | null>();
+  const dragOverItem = useRef<number | null>();
+
 
   let delayTimer: NodeJS.Timeout;
 
@@ -32,7 +36,7 @@ const Sidebar = memo(() => {
     }
   };
 
-  const savedCities = useSelector<RootState, City[]>(state => state.cities.citiesCache.filter(item => item.isSaved))
+  const savedCities = useSelector<RootState, City[]>(state => state.cities.citiesCache?.filter(item => item.isSaved))
 
   const handleChooseCity = (city: City) => {
     setCitiesSearch([]);
@@ -41,6 +45,27 @@ const Sidebar = memo(() => {
     )
   }
 
+  const handleDragStart = (e: any, index: number) => dragItem.current = index;
+
+  const handleDragEnter = (e: React.DragEvent<HTMLLIElement>, index: number) => {
+    dragOverItem.current = index;
+    console.log(e.currentTarget)
+    e.currentTarget.className += ' border-2 border-red-400'
+  };
+  const handleDragLeave = (e: React.DragEvent<HTMLLIElement>) => {
+    e.currentTarget.className = 'flex justify-between'
+  }
+
+  const handleDrop = (e: React.DragEvent<HTMLLIElement>) => {
+    e.preventDefault();
+    const copyListItems = [...savedCities];
+    const dragItemContent = copyListItems[dragItem.current!];
+    copyListItems.splice(dragItem.current!, 1);
+    copyListItems.splice(dragOverItem.current!, 0, dragItemContent);
+    dragItem.current = null;
+    dragOverItem.current = null;
+    dispatch(modifyOrder(copyListItems))
+  }
 
 
   return (
@@ -76,7 +101,7 @@ const Sidebar = memo(() => {
         }
       </div>
 
-      {/* <Geo /> */}
+      <Geo />
 
       <DropdownSideBar openByDefault={true} label='Saved places' prefixIconName='star'>
         {
@@ -85,14 +110,27 @@ const Sidebar = memo(() => {
             :
             <ul
               className='child:transition-all child:duration-300
-          child-hover:text-red-400 child:cursor-pointer first:hover:pt-0
-         divide-y-2 divide-opacity-30 divide-black'
+            child-hover:text-red-400 child:cursor-pointer first:hover:pt-0
+              '
+              // divide-y-2 divide-opacity-30 divide-black
             >
-              {savedCities.map(item => (
-                <ul key={item.id} onClick={() => handleChooseCity(item)}>
-                  <span className='text-2xl'>{item.name}, </span>
-                  <span className='text-xl'>{item.country}</span>
-                </ul>
+              {savedCities.map((item, index) => (
+                <li key={item.id}
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragEnter={(e) => handleDragEnter(e, index)}
+                  onDragLeave={e => handleDragLeave(e)}
+                  onDragEnd={handleDrop}
+                  draggable='true'
+                  onClick={() => handleChooseCity(item)}
+                  className='flex justify-between'
+                >
+                  <div>
+                    <span className='text-2xl'>{item.name}</span>
+                    {item.country.length > 0 && <span className='text-xl'>, {item.country}</span>
+                    }
+                  </div>
+                  <span className="material-symbols-outlined self-end">drag_indicator</span>
+                </li>
 
               ))
               }
