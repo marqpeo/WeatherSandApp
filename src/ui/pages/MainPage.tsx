@@ -11,11 +11,15 @@ import { getSavedCities } from '../../redux/citiesState';
 export default function MainPage() {
   const dispatch = useDispatch();
 
-  const currentCity = useSelector<RootState, City | undefined>(state => state.cities.currentCity)
+  const currentCity = useSelector<RootState, City|undefined|null>(state => state.cities.currentCity);
 
   const loading = useSelector<RootState, string>(state => state.cities.fetchState);
 
   const selectedDay = useSelector<RootState, WeatherForecastDay | undefined>(state => {
+    // const cityGeo = state.geoForecast.geoCity;
+    // if (state.geoForecast.permissionUseGeo && cityGeo !== undefined) {
+    //   return cityGeo.forecast![0]
+    // }
     const city = state.cities.currentCity;
     if (city) {
       return city.selectedDay ? city.selectedDay
@@ -47,7 +51,7 @@ export default function MainPage() {
           👈 Try to search the city to find out its weather!
         </h1>
         <h1 className='text-3xl lg:hidden'>
-          Sorry, the site is currently unavailable for mobile devices. <br/>
+          Sorry, the site is currently unavailable for mobile devices. <br />
           But it will be soon, come back!
         </h1>
       </div>

@@ -5,7 +5,7 @@ import DayCard from "../Cards/DayCard";
 
 interface WeekDaysTypes {
   daysArray: WeatherForecastDay[] | undefined,
-  className: string,
+  className: string
 }
 
 const WeekDays = ({ daysArray, className }:WeekDaysTypes) => {

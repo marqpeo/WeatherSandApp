@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
-import cities from './citiesState'
+import cities from './citiesState';
 
 export const store = configureStore({
   reducer: {
-    cities
+    cities,
   },
   devTools: process.env.NODE_ENV !== 'production',
 });

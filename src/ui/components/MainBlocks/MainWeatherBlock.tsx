@@ -14,12 +14,6 @@ interface MainWeatherType {
 }
 
 const MainWeather = ({ className = '', city, selectedDay }: MainWeatherType) => {
-  // const [choosedDay, setDay] = useState<WeatherForecastDay|undefined>();
-  // const date = new Date().toDateString();
-  // const getTime = date => {
-  //   const d = new Date(date);
-  //   return d.toTimeString().slice(0, 5);
-  // };
 
   const dispatch = useDispatch();
 
@@ -53,13 +47,16 @@ const MainWeather = ({ className = '', city, selectedDay }: MainWeatherType) => 
             <div className='flex flex-col'>
               <div className='flex items-baseline'>
                 <h1 className='pr-2 text-3xl'>{city.name}</h1>
-                <button
+                {city.name !== 'GeoPosition' && <button
                   className='ml-3 text-2xl bg-blue-300 rounded-md px-2 h-min
                   shadow-none hover:shadow-lg hover:shadow-gray-300 '
                   onClick={handleSaveCity}
-                  >{city.isSaved ? 'Remove from saved' : 'Save'}</button>
+                  >{city.isSaved ? 'Remove from saved' : 'Save'}</button>}
               </div>
+              {
+                city.name !== 'GeoPosition' && 
               <span className='text-xl text-gray-500'>{city.country + ', ' + city.desc1}</span>
+              }
               <span className='text-2xl text-gray-600 mt-2'>{selectedDay.date.toString().slice(0, 10).split('-').reverse().join('-')}</span>
             </div>
             <div className='bg-blue-300 rounded-md p-2 h-min'>Data from <b>{city.forecastCount}</b> sources</div>
