@@ -70,7 +70,7 @@ const MainWeather = ({ className = '', city, selectedDay }: MainWeatherType) => 
                 <TempValue temp={selectedDay.tempMax} label='Max temp.' />
               </div>
               <div className='h-1/3 w-full flex justify-around'>
-                <AdditValues iconName='air' valueLabel={`${selectedDay.windSpeed} м/с`} />
+                <AdditValues iconName='air' valueLabel={`${selectedDay.windSpeed} mps`} />
                 <AdditValues iconName='rainy' valueLabel={`${selectedDay.precipProbab} %`} />
                 {
                   selectedDay.sunrise && selectedDay.sunset &&

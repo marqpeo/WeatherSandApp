@@ -106,23 +106,22 @@ const citiesSlice = createSlice({
       action: { payload: boolean | undefined; type: string }
     ) {
       // if (action.payload !== undefined) {
-        // state.permissionUseGeo = action.payload;
+      // state.permissionUseGeo = action.payload;
       // } else {
-        state.permissionUseGeo = !state.permissionUseGeo;
-        const newArr = state.citiesCache.filter(
-          item => item.name !== 'GeoPosition'
-        );
-        state.citiesCache = newArr;
-        if (state.currentCity?.name === 'GeoPosition') {
-          if (state.citiesCache[0]) {
-            state.currentCity = state.citiesCache[0]
-          }else{
-            state.currentCity = null
-
-          }
+      state.permissionUseGeo = !state.permissionUseGeo;
+      const newArr = state.citiesCache.filter(
+        item => item.name !== 'GeoPosition'
+      );
+      state.citiesCache = newArr;
+      if (state.currentCity?.name === 'GeoPosition') {
+        if (state.citiesCache[0]) {
+          state.currentCity = state.citiesCache[0];
+        } else {
+          state.currentCity = null;
         }
+      }
       // }
-      saveToStorage(state)
+      saveToStorage(state);
     },
     toggleSavedCity(state, action) {
       const cityToSave: City = action.payload;
@@ -160,17 +159,21 @@ const citiesSlice = createSlice({
       const storage = getFromStorage();
       if (storage) {
         const parsedState = JSON.parse(storage) as CitiesState;
-        
-        const citiesArr = parsedState.citiesCache.map(item =>
-          Date.now() > new Date(item.forecast![1].date).getTime()
-          ? { ...item, forecast: undefined, forecastCount: undefined }
-          : item
-          );
-          state.citiesCache = citiesArr;
-          state.currentCity = parsedState.currentCity;
-          // state.currentCity.selectedDay = citiesArr[0].forecast[0] ;
 
-          state.permissionUseGeo = parsedState.permissionUseGeo;
+        const citiesArr = parsedState.citiesCache.map(item => {
+          console.log(Date.now() > new Date(item.forecast![1].date).getTime());
+
+          return Date.now() > new Date(item.forecast![1].date).getTime()
+            ? { ...item, forecast: undefined, forecastCount: undefined }
+            : item;
+        });
+        console.log(citiesArr[0], parsedState.citiesCache[0]);
+        
+        state.citiesCache = citiesArr;
+        state.currentCity = parsedState.currentCity;
+        // state.currentCity.selectedDay = citiesArr[0].forecast[0] ;
+
+        state.permissionUseGeo = parsedState.permissionUseGeo;
       }
       state.fetchState = 'ok';
     },
@@ -215,9 +218,9 @@ const citiesSlice = createSlice({
         saveToStorage(state);
         // localStorage.setItem(geoForecastKey, JSON.stringify(state));
       })
-      .addCase(fetchForecastGeo.rejected, (state) => {
-        state.fetchState = 'ok'
-      })
+      .addCase(fetchForecastGeo.rejected, state => {
+        state.fetchState = 'ok';
+      });
   },
 });
 
