@@ -15,8 +15,7 @@ export interface City {
   forecast?: WeatherForecastDay[];
   forecastCount?: number;
   selectedDay?: WeatherForecastDay;
-  isSaved: boolean,
-  expirationTime?: number
+  isSaved: boolean
 }
 
 // Converts JSON strings to/from your types
@@ -42,3 +41,22 @@ export class CityConvert {
     return JSON.stringify(value);
   }
 }
+
+export const getCityByGeo = (latitude: number, longitude: number, forecast: WeatherForecastDay[], forecastCount: number) : City => {
+  return {
+  id: 0,
+  name: 'GeoPosition',
+  country: '',
+  latitude: latitude,
+  longitude: longitude,
+  elevation: 0,
+  countryCode: '',
+  timezone: '',
+  desc1: '',
+  desc2: '',
+  desc3: '',
+  isSaved: true,
+  forecast,
+  forecastCount,
+  selectedDay: forecast[0],
+}};
