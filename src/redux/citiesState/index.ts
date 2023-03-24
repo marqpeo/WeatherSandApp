@@ -1,11 +1,16 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { methodGet } from '../../api/methods';
 import { getCityForecast } from '../../api/paths';
-import { City } from '../../models/City';
+import { City, getCityByGeo } from '../../models/City';
 import { WeatherConvert } from '../../models/WeatherForecastDay';
 import { RootState } from '../store';
 
-const savedStoreKey = 'savedStoreCities';
+const deprecatedKeys = ['savedStoreCities'];
+
+const storageKeys = {
+  savedCities: 'cachedCitiesStore',
+  useGeoPermission: 'permissionToUseGeo'
+};
 
 interface CitiesState {
   fetchState: string;
@@ -72,26 +77,14 @@ export const fetchForecastGeo = createAsyncThunk(
     const res = await methodGet(
       getCityForecast(coords.latitude, coords.longitude)
     );
-
     if (res.status === 'ok') {
-      const forecast = WeatherConvert.toWeatherForecastDays(res.results);
-      const city: City = {
-        id: 0,
-        name: 'GeoPosition',
-        country: '',
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        elevation: 0,
-        countryCode: '',
-        timezone: '',
-        desc1: '',
-        desc2: '',
-        desc3: '',
-        isSaved: true,
-        forecast,
-        forecastCount: res.count as number,
-        selectedDay: forecast[0],
-      };
+      const geoForecast = WeatherConvert.toWeatherForecastDays(res.results);
+      const city = getCityByGeo(
+        coords.latitude,
+        coords.longitude,
+        geoForecast,
+        res.count as number
+      );
       return city;
     }
   }
@@ -105,10 +98,8 @@ const citiesSlice = createSlice({
       state,
       action: { payload: boolean | undefined; type: string }
     ) {
-      // if (action.payload !== undefined) {
-      // state.permissionUseGeo = action.payload;
-      // } else {
-      state.permissionUseGeo = !state.permissionUseGeo;
+      const newPermissionValue = !state.permissionUseGeo
+      state.permissionUseGeo = newPermissionValue;
       const newArr = state.citiesCache.filter(
         item => item.name !== 'GeoPosition'
       );
@@ -120,22 +111,16 @@ const citiesSlice = createSlice({
           state.currentCity = null;
         }
       }
-      // }
-      saveToStorage(state);
+      saveToStorage(newPermissionValue, storageKeys.useGeoPermission);
     },
     toggleSavedCity(state, action) {
       const cityToSave: City = action.payload;
       const newSavedState = !cityToSave.isSaved;
 
-      const cityExpirationTime = 24 * 60 * 60 * 1000;
-
       const toggledCity: City = {
         ...cityToSave,
         isSaved: newSavedState,
-        expirationTime:
-          newSavedState === true ? Date.now() + cityExpirationTime : undefined,
       };
-      //
       const newArray = state.citiesCache.filter(
         city => city.id !== toggledCity.id
       );
@@ -145,7 +130,7 @@ const citiesSlice = createSlice({
 
       state.currentCity = toggledCity;
 
-      saveToStorage(state);
+      saveToStorage(state.citiesCache);
     },
     modifyOrder(state, action) {
       const newCachedCities = state.citiesCache;
@@ -153,29 +138,33 @@ const citiesSlice = createSlice({
         ...action.payload,
         ...newCachedCities.filter(item => item.isSaved === false),
       ];
-      saveToStorage(state);
+      saveToStorage(state.citiesCache);
     },
     getSavedCities(state) {
       const storage = getFromStorage();
       if (storage) {
-        const parsedState = JSON.parse(storage) as CitiesState;
-
-        const citiesArr = parsedState.citiesCache.map(item => {
-          console.log(Date.now() > new Date(item.forecast![1].date).getTime());
-
-          return Date.now() > new Date(item.forecast![1].date).getTime()
+        const parsedState = JSON.parse(storage) as City[];
+        
+        const citiesArr = parsedState.map(item => {
+          if (item.forecast) {            
+            return Date.now() > new Date(item.forecast[1].date).getTime()
             ? { ...item, forecast: undefined, forecastCount: undefined }
             : item;
+          } else return item;
         });
-        console.log(citiesArr[0], parsedState.citiesCache[0]);
         
         state.citiesCache = citiesArr;
-        state.currentCity = parsedState.currentCity;
-        // state.currentCity.selectedDay = citiesArr[0].forecast[0] ;
-
-        state.permissionUseGeo = parsedState.permissionUseGeo;
+        state.currentCity = citiesArr[0];
+        
+      }
+      const geoPermission = getFromStorage(storageKeys.useGeoPermission)
+      if (geoPermission) {
+        state.permissionUseGeo = JSON.parse(geoPermission) as boolean;
+        
       }
       state.fetchState = 'ok';
+
+      deprecatedKeys.forEach(key => localStorage.removeItem(key))
     },
     selectDay(state, { payload }) {
       state.currentCity!.selectedDay = payload;
@@ -195,13 +184,14 @@ const citiesSlice = createSlice({
             ...data.cachedCity!,
             selectedDay: data.cachedCity!.forecast![0],
           };
+          state.citiesCache = state.citiesCache.filter(city => city.id !== data.cachedCity!.id);
         } else {
           state.currentCity!.forecast = data?.forecast;
           state.currentCity!.forecastCount = data?.count;
           state.currentCity!.selectedDay = data?.forecast![0];
-          state.citiesCache.push(state.currentCity!);
         }
-        saveToStorage(state);
+        state.citiesCache.push(state.currentCity!);
+        saveToStorage(state.citiesCache);
       })
       .addCase(fetchCityForecast.rejected, state => {
         state.fetchState = 'error';
@@ -215,7 +205,7 @@ const citiesSlice = createSlice({
           state.citiesCache.push(action.payload);
           state.currentCity = action.payload;
         }
-        saveToStorage(state);
+        saveToStorage(state.citiesCache);
         // localStorage.setItem(geoForecastKey, JSON.stringify(state));
       })
       .addCase(fetchForecastGeo.rejected, state => {
@@ -234,10 +224,10 @@ export const {
 
 export default citiesSlice.reducer;
 
-function saveToStorage(state: CitiesState) {
-  localStorage.setItem(savedStoreKey, JSON.stringify(state));
+function saveToStorage(value:any, key = storageKeys.savedCities) {
+  localStorage.setItem(key, JSON.stringify(value));
 }
 
-function getFromStorage() {
-  return localStorage.getItem(savedStoreKey);
+function getFromStorage(key = storageKeys.savedCities) {
+  return localStorage.getItem(key);
 }

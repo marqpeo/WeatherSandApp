@@ -5,11 +5,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { useEffect } from 'react';
 import { City } from '../../models/City';
-import { getSavedCities } from '../../redux/citiesState';
+import { fetchCityForecast, getSavedCities } from '../../redux/citiesState';
 
 
 export default function MainPage() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<any>();
 
   const currentCity = useSelector<RootState, City|undefined|null>(state => state.cities.currentCity);
 
@@ -30,6 +30,14 @@ export default function MainPage() {
   useEffect(() => {
     dispatch(getSavedCities());
   }, [dispatch])
+
+  useEffect(() => {
+    if( currentCity && !currentCity?.forecast ){
+      dispatch(
+        fetchCityForecast(currentCity)
+      )
+    }
+  },[currentCity, dispatch])
 
   if (loading === 'loading') {
     return (
