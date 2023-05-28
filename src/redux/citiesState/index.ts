@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { methodGet } from '../../api/methods';
 import { getCityForecast } from '../../api/paths';
-import { City, getCityByGeo } from '../../models/City';
-import { WeatherConvert } from '../../models/WeatherForecastDay';
+import { ICity, getCityByGeo } from '../../models/ICity';
+import { WeatherConvert } from '../../models/IWeatherForecastDay';
 import { RootState } from '../store';
 
 const deprecatedKeys = ['savedStoreCities'];
@@ -14,8 +14,8 @@ const storageKeys = {
 
 interface CitiesState {
   fetchState: string;
-  currentCity?: City | null;
-  citiesCache: City[];
+  currentCity?: ICity | null;
+  citiesCache: ICity[];
   permissionUseGeo: boolean;
 }
 
@@ -28,7 +28,7 @@ const initialState: CitiesState = {
 
 export const fetchCityForecast = createAsyncThunk(
   'forecast/fetchCityWeather',
-  async (city: City, { getState }) => {
+  async (city: ICity, { getState }) => {
     const { cities } = getState() as RootState;
     const cachedCity = cities.citiesCache.find(item => item.id === city.id);
     if (cachedCity) {
@@ -42,7 +42,7 @@ export const fetchCityForecast = createAsyncThunk(
           getCityForecast(cachedCity.latitude, cachedCity.longitude)
         );
         if (res.status === 'ok') {
-          const newCity: City = {
+          const newCity: ICity = {
             ...cachedCity,
             forecast: WeatherConvert.toWeatherForecastDays(res.results),
             forecastCount: res.count as number,
@@ -114,10 +114,10 @@ const citiesSlice = createSlice({
       saveToStorage(newPermissionValue, storageKeys.useGeoPermission);
     },
     toggleSavedCity(state, action) {
-      const cityToSave: City = action.payload;
+      const cityToSave: ICity = action.payload;
       const newSavedState = !cityToSave.isSaved;
 
-      const toggledCity: City = {
+      const toggledCity: ICity = {
         ...cityToSave,
         isSaved: newSavedState,
       };
@@ -143,7 +143,7 @@ const citiesSlice = createSlice({
     getSavedCities(state) {
       const storage = getFromStorage();
       if (storage) {
-        const parsedState = JSON.parse(storage) as City[];
+        const parsedState = JSON.parse(storage) as ICity[];
         
         const citiesArr = parsedState.map(item => {
           if (item.forecast) {            

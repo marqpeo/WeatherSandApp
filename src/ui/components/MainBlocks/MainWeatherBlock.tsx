@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { getTime } from '../../../helpers/types.helpers';
-import { WeatherForecastDay } from '../../../models/WeatherForecastDay';
-import { City } from '../../../models/City';
+import { IWeatherForecastDay } from '../../../models/IWeatherForecastDay';
+import { ICity } from '../../../models/ICity';
 import { useDispatch } from 'react-redux';
 import { toggleSavedCity } from '../../../redux/citiesState';
 
@@ -9,8 +9,8 @@ import { toggleSavedCity } from '../../../redux/citiesState';
 
 interface MainWeatherType {
   className: string,
-  city: City,
-  selectedDay?: WeatherForecastDay
+  city: ICity,
+  selectedDay?: IWeatherForecastDay
 }
 
 const MainWeather = ({ className = '', city, selectedDay }: MainWeatherType) => {

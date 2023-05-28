@@ -1,12 +1,12 @@
 import { memo, SyntheticEvent } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import { getDateAndMonth, getWeekDay } from "../../../helpers/types.helpers";
-import { WeatherForecastDay } from "../../../models/WeatherForecastDay";
+import { IWeatherForecastDay } from "../../../models/IWeatherForecastDay";
 import { selectDay } from "../../../redux/citiesState";
 import { RootState } from "../../../redux/store";
 
 interface DayCardTypes {
-  weatherDay: WeatherForecastDay
+  weatherDay: IWeatherForecastDay
 }
 
 const DayCard = ({ weatherDay }: DayCardTypes) => {

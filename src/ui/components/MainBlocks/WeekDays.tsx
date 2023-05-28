@@ -1,10 +1,10 @@
 import { memo } from "react"
-import { WeatherForecastDay } from "../../../models/WeatherForecastDay";
+import { IWeatherForecastDay } from "../../../models/IWeatherForecastDay";
 import DayCard from "../Cards/DayCard";
 
 
 interface WeekDaysTypes {
-  daysArray: WeatherForecastDay[] | undefined,
+  daysArray: IWeatherForecastDay[] | undefined,
   className: string
 }
 
