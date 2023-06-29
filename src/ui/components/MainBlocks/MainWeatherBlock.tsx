@@ -46,7 +46,7 @@ const MainWeather = ({ city, selectedDay }: MainWeatherType) => {
   return (
     <Paper
       elevation={3}
-      className='bg-white p-5 h-3/5 md:h-2/3 flex flex-row flex-wrap-reverse'>
+      className='bg-white p-5 h-2/3 flex flex-row flex-wrap-reverse'>
       {selectedDay && city &&
         <>
           <div className='md:w-2/3 flex flex-col justify-between'>
