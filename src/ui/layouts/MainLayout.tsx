@@ -1,16 +1,19 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-import { Container, Drawer, Grid, Icon } from '@mui/material';
-import { useState } from 'react';
+import { Container, Drawer, Grid } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useDispatch, useSelector } from 'react-redux';
+import { IAppState } from '../../models/AppState';
+import { toggleDrawer } from '../../redux/core';
 
 export default function MainLayout() {
-
-  const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const handleOpenMenu = () => {
-    setIsOpen(prev => !prev);
+    dispatch(toggleDrawer());
   }
+  
+  const drawerIsOpen = useSelector<IAppState, boolean>(({core}) => core.drawerIsOpen);
 
   return (
     <Container
@@ -23,17 +26,17 @@ export default function MainLayout() {
     >
       <Grid container wrap='nowrap'>
         
-        { isOpen &&
-          <Drawer anchor='left' open={isOpen} onClose={handleOpenMenu} >
+        { drawerIsOpen &&
+          <Drawer anchor='left' open={drawerIsOpen} onClose={handleOpenMenu} >
             <Sidebar/>
           </Drawer>
         }
 
-        <Grid className="item" display={{xs:'none', md:'block'}} md={3}>
+        <Grid item className="item" display={{xs:'none', md:'block'}} md={3}>
           <Sidebar />
         </Grid>
         
-        <Grid className="item" xs={12} md={true} sx={{p:2}}>
+        <Grid item className="item" xs={12} md={true} sx={{p:2}}>
           <MenuIcon onClick={handleOpenMenu} sx={{display:{xs:'block', md:'none'}}} />
           {/* <div className='container p-10 md:p-16'> */}
           <Outlet />

@@ -1,4 +1,4 @@
-import { IWeatherForecastDay } from './IWeatherForecastDay';
+import { IWeatherForecastDay } from './WeatherForecastDay';
 
 export interface ICity {
   id: number;

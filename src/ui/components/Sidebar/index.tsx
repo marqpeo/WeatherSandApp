@@ -1,14 +1,15 @@
 import { BaseSyntheticEvent, memo, useRef, useState } from 'react';
-import CollapseList from './CollapseList';
-import { methodGet } from '../../../api/methods';
-import { getCityByName } from '../../../api/paths';
-import { ICity, CityConvert } from '../../../models/ICity';
+// import { methodGet } from '../../../api/methods';
+import { ICity, CityConvert } from '../../../models/City';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCityForecast, modifyOrder } from '../../../redux/citiesState';
-import { RootState } from '../../../redux/store';
+import { modifyOrder, saveAndChooseNewCity } from '../../../redux/citiesState';
 import Geo from './geo';
-import { Box, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Box, Collapse, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { ExpandLess, ExpandMore, StarBorder } from '@mui/icons-material';
+import { IAppState } from '../../../models/AppState';
+import { getCityByName } from '../../../services/geoServices';
+import { ForecastActionTypes, fetchCityWeather } from '../../../models/redux/actions/forecast';
+import { toggleSavedList } from '../../../redux/core';
 
 // interface ISideBarProps{
 //   isMobile?: true;
@@ -32,7 +33,7 @@ const Sidebar = memo(() => {
       event.preventDefault();
       clearTimeout(delayTimer);
       delayTimer = setTimeout(async () => {
-        const response = await methodGet(getCityByName(searchText));
+        const response = await getCityByName(searchText);        
         const cities = CityConvert.toCityArr(response.results);
         setCitiesSearch(cities);
         // console.log(event.target.value);
@@ -43,13 +44,11 @@ const Sidebar = memo(() => {
     }
   };
 
-  const savedCities = useSelector<RootState, ICity[]>(state => state.cities.citiesCache?.filter(item => item.isSaved))
+  const savedCities = useSelector<IAppState, ICity[]>(state => state.cities.citiesCache?.filter(item => item.isSaved))
 
   const handleChooseCity = (city: ICity) => {
     setCitiesSearch([]);
-    dispatch(
-      fetchCityForecast(city)
-    )
+    dispatch(fetchCityWeather(city))
   }
 
   const handleDragStart = (e: any, index: number) => dragItem.current = index;
@@ -74,9 +73,9 @@ const Sidebar = memo(() => {
     dispatch(modifyOrder(copyListItems))
   }
 
-  const [open, setOpen] = useState(false);
+  const savedListIsOpen = useSelector<IAppState, boolean>(state => state.core.savedListIsOpen);
 
-  const handleClick = () => {setOpen(v => !v)};
+  const handleClick = () => dispatch(toggleSavedList());
 
 
   return (
@@ -126,18 +125,18 @@ const Sidebar = memo(() => {
           </List>
         }
       </ListItem>
-
+{/* 
       <ListItem>
         <Geo />
-      </ListItem>
+      </ListItem> */}
 
       <ListItem sx={{cursor:'pointer'}} onClick={handleClick}>
         <ListItemIcon> <StarBorder /> </ListItemIcon>
         <ListItemText primary={<Typography variant='h6'>Saved cities</Typography>} />
-        {open ? <ExpandLess /> : <ExpandMore />}
+        {savedListIsOpen ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        {open &&
+      <Collapse in={savedListIsOpen} timeout="auto" unmountOnExit>
+        {savedListIsOpen &&
           (savedCities.length === 0) ?
           <Typography component='span'>You don't have any saved city</Typography>
           :

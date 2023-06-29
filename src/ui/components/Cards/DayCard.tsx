@@ -1,29 +1,35 @@
 import { memo, SyntheticEvent } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import { getDateAndMonth, getWeekDay } from "../../../helpers/types.helpers";
-import { IWeatherForecastDay } from "../../../models/IWeatherForecastDay";
+import { IWeatherForecastDay } from "../../../models/WeatherForecastDay";
 import { selectDay } from "../../../redux/citiesState";
-import { RootState } from "../../../redux/store";
+import { IAppState } from "../../../models/AppState";
+import { Paper } from "@mui/material";
 
 interface DayCardTypes {
   weatherDay: IWeatherForecastDay
 }
 
-const DayCard = ({ weatherDay }: DayCardTypes) => {
+const DayCard = ({ weatherDay }: DayCardTypes) => {  
   const date = new Date(weatherDay.date);
 
   const dispatch = useDispatch();
 
   const handleSelectDay = (e: SyntheticEvent) => {
     e.preventDefault();
-    dispatch(selectDay(weatherDay));
+    dispatch(selectDay(weatherDay.date));
   }
-  const dayIsSelected = useSelector<RootState, boolean>(state => state.cities.currentCity!.selectedDay!.date === weatherDay.date);
+  const dayIsSelected = useSelector<IAppState, boolean>(state =>
+    state.cities.currentCity?.selectedDay?.date === weatherDay.date);
+  
 
   return (
-    <div onClick={handleSelectDay}
+    <Paper
+      onClick={handleSelectDay}
+      elevation={3}
       className={`flex flex-col justify-around items-center
-      bg-white w-full h-full mx-1 cursor-pointer border-4 rounded-lg shadow-none hover:drop-shadow-lg
+      min-w-fit
+      w-full h-full mx-1 cursor-pointer border-2 rounded-lg shadow-none hover:drop-shadow-lg
       ${dayIsSelected ? 'border-temp-deg' : 'hover:border-temp-deg'} `}
     >
       <span>{getWeekDay(date.getDay(), 'ru')}</span>
@@ -48,7 +54,7 @@ const DayCard = ({ weatherDay }: DayCardTypes) => {
       </div>
 
 
-    </div>
+    </Paper>
   )
 }
 

@@ -1,33 +1,33 @@
 import { memo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchForecastGeo, toggleGeoPermission } from '../../../redux/citiesState';
-import { RootState } from '../../../redux/store';
+// import { fetchForecastGeo, toggleGeoPermission } from '../../../redux/citiesState';
 import { ListItemIcon, ListItemText, Switch, Typography } from '@mui/material';
 import { NearMe } from '@mui/icons-material';
+import { IAppState } from '../../../models/AppState';
 
 const Geo = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  // const [loading, setLoading] = useState<boolean>(false);
 
   const dispatch = useDispatch<any>();
 
-  const permissionUseGeo = useSelector<RootState, boolean>(({ cities }) => cities.permissionUseGeo);
+  // const permissionUseGeo = useSelector<IAppState, boolean>(({ core }) => core.);
 
   const handleOnGeo = (e: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
-    setLoading(true);
-    e.preventDefault();
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        dispatch(toggleGeoPermission());
-        dispatch(fetchForecastGeo(coords));
-        setLoading(false);
-      },
-      (err) => {
-        console.log({ err });
-        dispatch(
-          toggleGeoPermission(false)
-        )
-        setLoading(false);
-      });
+    // setLoading(true);
+    // e.preventDefault();
+    // navigator.geolocation.getCurrentPosition(
+    //   ({ coords }) => {
+    //     dispatch(toggleGeoPermission());
+    //     dispatch(fetchForecastGeo(coords));
+    //     setLoading(false);
+    //   },
+    //   (err) => {
+    //     console.log({ err });
+    //     dispatch(
+    //       toggleGeoPermission(false)
+    //     )
+    //     setLoading(false);
+    //   });
   };
 
   return (
@@ -37,7 +37,7 @@ const Geo = () => {
       <Switch
         edge="end"
         onChange={handleOnGeo}
-        checked={permissionUseGeo}
+        // checked={permissionUseGeo}
         inputProps={{
           'aria-labelledby': 'switch-list-label-wifi',
         }}
