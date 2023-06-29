@@ -1,6 +1,6 @@
-import { WeatherForecastDay } from './WeatherForecastDay';
+import { IWeatherForecastDay } from './WeatherForecastDay';
 
-export interface City {
+export interface ICity {
   id: number;
   name: string;
   latitude: number;
@@ -12,15 +12,15 @@ export interface City {
   desc1: string;
   desc2: string;
   desc3: string;
-  forecast?: WeatherForecastDay[];
+  forecast?: IWeatherForecastDay[];
   forecastCount?: number;
-  selectedDay?: WeatherForecastDay;
+  selectedDay?: IWeatherForecastDay;
   isSaved: boolean
 }
 
 // Converts JSON strings to/from your types
 export class CityConvert {
-  public static toCityArr(resultArray: any[]): City[] {
+  public static toCityArr(resultArray: any[]): ICity[] {
     return resultArray.map(city => ({
       id: city.id,
       name: city.name,
@@ -37,12 +37,12 @@ export class CityConvert {
     }));
   }
 
-  public static cityToJson(value: City[]): string {
+  public static cityToJson(value: ICity[]): string {
     return JSON.stringify(value);
   }
 }
 
-export const getCityByGeo = (latitude: number, longitude: number, forecast: WeatherForecastDay[], forecastCount: number) : City => {
+export const getCityByGeo = (latitude: number, longitude: number, forecast: IWeatherForecastDay[], forecastCount: number) : ICity => {
   return {
   id: 0,
   name: 'GeoPosition',

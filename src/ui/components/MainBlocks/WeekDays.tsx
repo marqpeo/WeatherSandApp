@@ -1,17 +1,16 @@
 import { memo } from "react"
-import { WeatherForecastDay } from "../../../models/WeatherForecastDay";
+import { IWeatherForecastDay } from "../../../models/WeatherForecastDay";
 import DayCard from "../Cards/DayCard";
 
 
 interface WeekDaysTypes {
-  daysArray: WeatherForecastDay[] | undefined,
-  className: string
+  daysArray: IWeatherForecastDay[] | undefined
 }
 
-const WeekDays = ({ daysArray, className }:WeekDaysTypes) => {
+const WeekDays = ({ daysArray }:WeekDaysTypes) => {
   return (
-    <div className={`flex justify-between mt-3 ${className}`}>
-      {daysArray && daysArray.map(item => (
+    <div className='flex justify-between mt-3 overflow-x-scroll'>
+      {daysArray !== undefined && daysArray.map(item => (
         <DayCard key={item.date.toString()} weatherDay={item} />
       ))}
     </div>
