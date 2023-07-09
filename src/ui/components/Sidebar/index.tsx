@@ -2,13 +2,13 @@ import { BaseSyntheticEvent, memo, useRef, useState } from 'react';
 // import { methodGet } from '../../../api/methods';
 import { ICity, CityConvert } from '../../../models/City';
 import { useDispatch, useSelector } from 'react-redux';
-import { modifyOrder, saveAndChooseNewCity } from '../../../redux/citiesState';
-import Geo from './geo';
+import { modifyOrder } from '../../../redux/citiesState';
+// import Geo from './geo';
 import { Box, Collapse, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { ExpandLess, ExpandMore, StarBorder } from '@mui/icons-material';
 import { IAppState } from '../../../models/AppState';
 import { getCityByName } from '../../../services/geoServices';
-import { ForecastActionTypes, fetchCityWeather } from '../../../models/redux/actions/forecast';
+import { fetchCityWeather } from '../../../models/redux/actions/forecast';
 import { toggleSavedList } from '../../../redux/core';
 
 // interface ISideBarProps{
@@ -33,10 +33,10 @@ const Sidebar = memo(() => {
       event.preventDefault();
       clearTimeout(delayTimer);
       delayTimer = setTimeout(async () => {
+        console.log(event.target.value);
         const response = await getCityByName(searchText);        
         const cities = CityConvert.toCityArr(response.results);
         setCitiesSearch(cities);
-        // console.log(event.target.value);
 
       }, 1000)
     } else if (citiesSearch.length > 0) {
