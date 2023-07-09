@@ -1,5 +1,5 @@
-export const getWeekDay = (num:number, lang:string) => {
-  const ru = [
+export const getWeekDay = (num:number, lang:string, fullName?:boolean) => {
+  const en = [
     'Sun',
     'Mon',
     'Tue',
@@ -8,7 +8,16 @@ export const getWeekDay = (num:number, lang:string) => {
     'Fri',
     'Sat',
   ];
-  return ru[num];
+  const enFull = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+  return fullName ? enFull[num] :en[num];
 }
 
 export const getDateAndMonth = (date:Date) => {
