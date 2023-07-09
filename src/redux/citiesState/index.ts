@@ -1,123 +1,72 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { methodGet } from '../../api/methods';
-import { getCityForecast } from '../../api/paths';
-import { City, getCityByGeo } from '../../models/City';
+import { ICity, getCityByGeo } from '../../models/City';
 import { WeatherConvert } from '../../models/WeatherForecastDay';
-import { RootState } from '../store';
+import { ICitiesState, IAppState } from '../../models/AppState';
+import { getCityForecast } from '../../services/forecastServices';
+import { ForecastActionTypes } from '../../models/redux/actions/forecast';
+import { getFromStorage, saveToStorage } from '../../helpers/localstorage.helpers';
 
 const deprecatedKeys = ['savedStoreCities'];
 
-const storageKeys = {
-  savedCities: 'cachedCitiesStore',
-  useGeoPermission: 'permissionToUseGeo'
+export enum StorageKeysCities {
+  SavedCities = 'cachedCitiesStore',
+  UseGeoPermission = 'permissionToUseGeo'
 };
 
-interface CitiesState {
-  fetchState: string;
-  currentCity?: City | null;
-  citiesCache: City[];
-  permissionUseGeo: boolean;
-}
-
-const initialState: CitiesState = {
-  fetchState: 'loading',
+const initialState: ICitiesState = {
   currentCity: undefined,
   citiesCache: [],
-  permissionUseGeo: false,
 };
 
-export const fetchCityForecast = createAsyncThunk(
-  'forecast/fetchCityWeather',
-  async (city: City, { getState }) => {
-    const { cities } = getState() as RootState;
-    const cachedCity = cities.citiesCache.find(item => item.id === city.id);
-    if (cachedCity) {
-      if (cachedCity?.forecast) {
-        return {
-          fromCache: true,
-          cachedCity,
-        };
-      } else {
-        const res = await methodGet(
-          getCityForecast(cachedCity.latitude, cachedCity.longitude)
-        );
-        if (res.status === 'ok') {
-          const newCity: City = {
-            ...cachedCity,
-            forecast: WeatherConvert.toWeatherForecastDays(res.results),
-            forecastCount: res.count as number,
-          };
-          return {
-            fromCache: true,
-            cachedCity: newCity,
-          };
-        }
-      }
-    }
-
-    const res = await methodGet(getCityForecast(city.latitude, city.longitude));
-
-    if (res.status === 'ok') {
-      return {
-        fromCache: false,
-        forecast: WeatherConvert.toWeatherForecastDays(res.results),
-        count: res.count as number,
-      };
-    }
-  }
-);
-
-export const fetchForecastGeo = createAsyncThunk(
-  'forecast/fetchForecastGeo',
-  async (coords: GeolocationCoordinates, { rejectWithValue, getState }) => {
-    const permissionUseGeo = getState() as RootState;
-    if (!permissionUseGeo.cities.permissionUseGeo) {
-      return rejectWithValue(false);
-    }
-    const res = await methodGet(
-      getCityForecast(coords.latitude, coords.longitude)
-    );
-    if (res.status === 'ok') {
-      const geoForecast = WeatherConvert.toWeatherForecastDays(res.results);
-      const city = getCityByGeo(
-        coords.latitude,
-        coords.longitude,
-        geoForecast,
-        res.count as number
-      );
-      return city;
-    }
-  }
-);
+// export const fetchForecastGeo = createAsyncThunk(
+//   ForecastActionTypes.FetchForecastGeo,
+//   async (coords: GeolocationCoordinates, { rejectWithValue, getState }) => {
+//     const permissionUseGeo = getState() as IAppState;
+//     if (!permissionUseGeo.cities.permissionUseGeo) {
+//       return rejectWithValue(false);
+//     }
+//     const res = await getCityForecast(coords.latitude, coords.longitude);
+//     if (res.status === 'ok') {
+//       const geoForecast = WeatherConvert.toWeatherForecastDays(res.results);
+//       const city = getCityByGeo(
+//         coords.latitude,
+//         coords.longitude,
+//         geoForecast,
+//         res.count as number
+//       );
+//       return city;
+//     }
+//   }
+// );
 
 const citiesSlice = createSlice({
   name: 'cities',
   initialState,
   reducers: {
-    toggleGeoPermission(
-      state,
-      action: { payload: boolean | undefined; type: string }
-    ) {
-      const newPermissionValue = !state.permissionUseGeo
-      state.permissionUseGeo = newPermissionValue;
-      const newArr = state.citiesCache.filter(
-        item => item.name !== 'GeoPosition'
-      );
-      state.citiesCache = newArr;
-      if (state.currentCity?.name === 'GeoPosition') {
-        if (state.citiesCache[0]) {
-          state.currentCity = state.citiesCache[0];
-        } else {
-          state.currentCity = null;
-        }
-      }
-      saveToStorage(newPermissionValue, storageKeys.useGeoPermission);
-    },
+    // toggleGeoPermission(
+    //   state,
+    //   action: { payload: boolean | undefined; type: string }
+    // ) {
+    //   const newPermissionValue = !state.permissionUseGeo
+    //   state.permissionUseGeo = newPermissionValue;
+    //   const newArr = state.citiesCache.filter(
+    //     item => item.name !== 'GeoPosition'
+    //   );
+    //   state.citiesCache = newArr;
+    //   if (state.currentCity?.name === 'GeoPosition') {
+    //     if (state.citiesCache[0]) {
+    //       state.currentCity = state.citiesCache[0];
+    //     } else {
+    //       state.currentCity = null;
+    //     }
+    //   }
+    //   saveToStorage(newPermissionValue, StorageKeysCities.UseGeoPermission);
+    // },
     toggleSavedCity(state, action) {
-      const cityToSave: City = action.payload;
+      const cityToSave: ICity = action.payload;
       const newSavedState = !cityToSave.isSaved;
 
-      const toggledCity: City = {
+      const toggledCity: ICity = {
         ...cityToSave,
         isSaved: newSavedState,
       };
@@ -130,7 +79,7 @@ const citiesSlice = createSlice({
 
       state.currentCity = toggledCity;
 
-      saveToStorage(state.citiesCache);
+      saveToStorage(state.citiesCache, StorageKeysCities.SavedCities);
     },
     modifyOrder(state, action) {
       const newCachedCities = state.citiesCache;
@@ -138,96 +87,122 @@ const citiesSlice = createSlice({
         ...action.payload,
         ...newCachedCities.filter(item => item.isSaved === false),
       ];
-      saveToStorage(state.citiesCache);
+      saveToStorage(state.citiesCache, StorageKeysCities.SavedCities);
     },
-    getSavedCities(state) {
-      const storage = getFromStorage();
-      if (storage) {
-        const parsedState = JSON.parse(storage) as City[];
-        
-        const citiesArr = parsedState.map(item => {
-          if (item.forecast) {            
-            return Date.now() > new Date(item.forecast[1].date).getTime()
-            ? { ...item, forecast: undefined, forecastCount: undefined }
-            : item;
-          } else return item;
-        });
-        
-        state.citiesCache = citiesArr;
-        state.currentCity = citiesArr[0];
-        
+    saveCities(state, {payload}:{payload: ICity[]}) {
+      if( Boolean(payload) && payload.length>0){
+        state.citiesCache = payload!;
+        state.currentCity = payload![0];
+        if(payload![0].forecast){
+          state.currentCity.selectedDay = payload![0].forecast[0];
+        }
       }
-      const geoPermission = getFromStorage(storageKeys.useGeoPermission)
-      if (geoPermission) {
-        state.permissionUseGeo = JSON.parse(geoPermission) as boolean;
+
+      // const geoPermission = getFromStorage(StorageKeysCities.UseGeoPermission)
+      // if (geoPermission) {
+      //   state.permissionUseGeo = JSON.parse(geoPermission) as boolean;
         
-      }
-      state.fetchState = 'ok';
+      // }
+      // state.fetchState = 'ok';
 
       deprecatedKeys.forEach(key => localStorage.removeItem(key))
     },
     selectDay(state, { payload }) {
-      state.currentCity!.selectedDay = payload;
+      const newSelectedDay = state.currentCity!.forecast!.find(item => item.date === payload)
+      state.currentCity!.selectedDay = newSelectedDay;
     },
-  },
-  extraReducers: builder => {
-    builder
-      .addCase(fetchCityForecast.pending, (state, action) => {
-        state.fetchState = 'loading';
-        state.currentCity = action.meta.arg;
-      })
-      .addCase(fetchCityForecast.fulfilled, (state, action) => {
-        state.fetchState = 'ok';
-        const data = action.payload;
-        if (data?.fromCache) {
-          state.currentCity = {
-            ...data.cachedCity!,
-            selectedDay: data.cachedCity!.forecast![0],
-          };
-          state.citiesCache = state.citiesCache.filter(city => city.id !== data.cachedCity!.id);
-        } else {
-          state.currentCity!.forecast = data?.forecast;
-          state.currentCity!.forecastCount = data?.count;
-          state.currentCity!.selectedDay = data?.forecast![0];
-        }
-        state.citiesCache.push(state.currentCity!);
-        saveToStorage(state.citiesCache);
-      })
-      .addCase(fetchCityForecast.rejected, state => {
-        state.fetchState = 'error';
-      })
-      .addCase(fetchForecastGeo.pending, state => {
-        state.fetchState = 'loading';
-      })
-      .addCase(fetchForecastGeo.fulfilled, (state, action) => {
-        state.fetchState = 'ok';
-        if (action.payload) {
-          state.citiesCache.push(action.payload);
-          state.currentCity = action.payload;
-        }
-        saveToStorage(state.citiesCache);
-        // localStorage.setItem(geoForecastKey, JSON.stringify(state));
-      })
-      .addCase(fetchForecastGeo.rejected, state => {
-        state.fetchState = 'ok';
-      });
+    
+    saveAndChooseNewCity(state, {payload}:{payload: ICity}){
+      const newCachedCities:ICity[] = [
+        ...state.citiesCache,
+        payload
+      ];
+      // state = {
+      //   ...state,
+      //   currentCity:{
+      //     ...payload,
+      //     selectedDay: payload?.forecast![0]
+      //   },
+      //   citiesCache: newCachedCities
+      // };
+      state.currentCity = {
+        ...payload,
+        selectedDay: payload?.forecast![0]
+      };
+      state.citiesCache = newCachedCities;
+
+      saveToStorage(newCachedCities, StorageKeysCities.SavedCities);
+    },
+    updateCity(state, {payload}:{payload:ICity}){
+      const updatedCityIndex = state.citiesCache.findIndex(item => item.id === payload.id);
+      state.citiesCache[updatedCityIndex] = payload;
+    },
+    selectCurrentCity(state, {payload}:{payload:number}){
+      const choosedCity = state.citiesCache.find(item => item.id === payload);
+      state.currentCity = choosedCity
+    }
   },
 });
 
 export const {
   toggleSavedCity,
-  getSavedCities,
+  saveCities,
   selectDay,
   modifyOrder,
-  toggleGeoPermission,
+  saveAndChooseNewCity,
+  updateCity,
+  selectCurrentCity
 } = citiesSlice.actions;
 
 export default citiesSlice.reducer;
 
-function saveToStorage(value:any, key = storageKeys.savedCities) {
-  localStorage.setItem(key, JSON.stringify(value));
-}
 
-function getFromStorage(key = storageKeys.savedCities) {
-  return localStorage.getItem(key);
-}
+// const a = (builder:ActionReducerMapBuilder<ICitiesState>) => 
+//   builder
+//     .addCase(fetchCityForecast.pending, (state, action) => {
+//       state.fetchState = 'loading';
+//       state.currentCity = action.meta.arg;
+//     })
+//     .addCase(fetchCityForecast.fulfilled, (state, action) => {
+//       state.fetchState = 'ok';
+//       const data = action.payload;
+//       if (data?.fromCache) {
+
+//         state.currentCity = {
+//           ...data.cachedCity!,
+//           selectedDay: data.cachedCity!.forecast![0],
+//         };
+//         state.citiesCache = state.citiesCache.filter(city => city.id !== data.cachedCity!.id);
+      
+//       } else {
+
+//         state.currentCity!.forecast = data?.forecast;
+//         state.currentCity!.forecastCount = data?.count;
+//         state.currentCity!.selectedDay = data?.forecast![0];
+
+//       }
+//       state.citiesCache.push(state.currentCity!);
+//       saveToStorage(state.citiesCache);
+//     })
+//     .addCase(fetchCityForecast.rejected, state => {
+//       state.fetchState = 'error';
+//     })
+
+
+
+
+//     .addCase(fetchForecastGeo.pending, state => {
+//       state.fetchState = 'loading';
+//     })
+//     .addCase(fetchForecastGeo.fulfilled, (state, action) => {
+//       state.fetchState = 'ok';
+//       if (action.payload) {
+//         state.citiesCache.push(action.payload);
+//         state.currentCity = action.payload;
+//       }
+//       saveToStorage(state.citiesCache);
+//       // localStorage.setItem(geoForecastKey, JSON.stringify(state));
+//     })
+//     .addCase(fetchForecastGeo.rejected, state => {
+//       state.fetchState = 'ok';
+//     });

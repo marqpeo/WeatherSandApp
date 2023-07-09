@@ -1,4 +1,4 @@
-export interface WeatherForecastDay {
+export interface IWeatherForecastDay {
   date:         Date;
   precipProbab: number;
   tempMax:      number;
@@ -11,11 +11,11 @@ export interface WeatherForecastDay {
 
 // Converts JSON strings to/from the type
 export class WeatherConvert {
-  public static toWeatherForecastDays(resultArray: any[]): WeatherForecastDay[] {
-    return resultArray as WeatherForecastDay[];
+  public static toWeatherForecastDays(resultArray: any[]): IWeatherForecastDay[] {
+    return resultArray as IWeatherForecastDay[];
   }
 
-  public static weatherForecastDaysToJson(value: WeatherForecastDay[]): string {
+  public static weatherForecastDaysToJson(value: IWeatherForecastDay[]): string {
       return JSON.stringify(value);
   }
 }
