@@ -1,10 +1,10 @@
-const _baseUrl = process.env.NODE_ENV === 'production'
-      ? process.env.API_URL
-      : process.env.API_URL_DEV
+const _baseUrl = process.env.NODE_ENV !== 'production'
+      ? process.env.REACT_APP_API_URL
+      : process.env.REACT_APP_API_URL_DEV
 
 export const methodGet = async (url: string,query?:object) => {
   try {    
-    const _url = new URL(url, _baseUrl);
+    const _url = new URL(`/api${url}`, _baseUrl);
     
     const response = await fetch(_url)
     

@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import { getTime, getWeekDay } from '../../../helpers/types.helpers';
 import { IWeatherForecastDay } from '../../../models/WeatherForecastDay';
 import { ICity } from '../../../models/City';
