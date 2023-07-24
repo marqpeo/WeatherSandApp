@@ -28,32 +28,23 @@ export default function MainPage() {
     dispatch(getSavedCities());
   }, [dispatch])
 
-  // useEffect(() => {
-  //   if( currentCity && !currentCity?.forecast ){
-  //     dispatch(
-  //       fetchCityForecast(currentCity)
-  //     )
-  //   }
-  // },[currentCity, dispatch])
-
-  return currentCity ?
-    (<>
+  if(loading){
+    return (
       <Backdrop
-        sx={{ color: '#fff', zIndex:9999}}
+        sx={{ color: '#fff', zIndex: 9999 }}
         open={loading}
       >
-        <CircularProgress size={100} color="inherit"  />
+        <CircularProgress size={100} color="inherit" />
       </Backdrop>
-      <MainWeather city={currentCity} selectedDay={selectedDay} />
-      <WeekDays daysArray={currentCity?.forecast}  />
-      {/* className='w-3/4 h-1/4' */}
-    </>)
-    :
-    (
-      <div className=' '>
-        <Typography variant='h3'>
-          👈 Try to search the city to find out its weather!
-        </Typography>
-      </div>
     )
+  }
+
+  return currentCity
+    ? <>
+      <MainWeather city={currentCity} selectedDay={selectedDay} />
+      <WeekDays daysArray={currentCity?.forecast} />
+    </>
+    : <Typography variant='h3'>
+      👈 Try to search the city to find out its weather!
+    </Typography>
 }

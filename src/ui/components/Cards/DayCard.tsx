@@ -41,6 +41,7 @@ const DayCard = ({ weatherDay }: DayCardTypes) => {
             src={`/assets/weather_types/${weatherDay.weatherType}.svg`}
             className='w-2/3'
             alt="weather type"
+            style={{objectFit:'cover'}}
             />
         }
         <div className='flex flex-col items-center w-1/3'>

@@ -10,6 +10,7 @@ import { IAppState } from '../../../models/AppState';
 import { getCityByName } from '../../../services/geoServices';
 import { fetchCityWeather } from '../../../models/redux/actions/forecast';
 import { toggleSavedList } from '../../../redux/core';
+import MenuButton from '../Buttons/MenuButton';
 
 // interface ISideBarProps{
 //   isMobile?: true;
@@ -178,6 +179,7 @@ const Sidebar = memo(() => {
       {/* <DropdownSideBar label='Настройки' prefixIconName='settings' >
         <></>
       </DropdownSideBar> */}
+      {/* <MenuButton/> */}
     </List>
   );
 });
