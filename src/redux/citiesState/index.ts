@@ -73,12 +73,12 @@ const citiesSlice = createSlice({
       const newArray = state.citiesCache.filter(
         city => city.id !== toggledCity.id
       );
-      newArray.push(toggledCity);
+      const isLastSaved = newArray.some(city => city.isSaved);
+      if(toggledCity.isSaved || !isLastSaved) newArray.unshift(toggledCity);
+        else newArray.push(toggledCity);
 
       state.citiesCache = newArray;
-
       state.currentCity = toggledCity;
-
       saveToStorage(state.citiesCache, StorageKeysCities.SavedCities);
     },
     modifyOrder(state, action) {
@@ -108,7 +108,7 @@ const citiesSlice = createSlice({
       deprecatedKeys.forEach(key => localStorage.removeItem(key))
     },
     selectDay(state, { payload }) {
-      const newSelectedDay = state.currentCity!.forecast!.find(item => item.date === payload)
+      const newSelectedDay = state.currentCity!.forecast!.find(item => item.date.toString() === payload)
       state.currentCity!.selectedDay = newSelectedDay;
     },
     

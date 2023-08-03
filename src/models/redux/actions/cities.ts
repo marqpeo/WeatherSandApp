@@ -1,7 +1,7 @@
 import { IAction } from ".";
 
 export const enum CitiesActionTypes {
-  GetSavedCities = 'cities/GetSavedCities'
+  GetSavedCities = 'cities/GET_SAVED_CITIES'
 };
 
 export type ActionTypes =
