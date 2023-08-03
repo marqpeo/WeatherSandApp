@@ -13,7 +13,7 @@ interface ICitiesListProps {
 }
 
 const CitiesList = ({open, handleChooseCity}: ICitiesListProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('sidebar');
 
   const savedCities = useSelector<IAppState, ICity[]>(state => state.cities.citiesCache.filter(item => item.isSaved))
 
@@ -25,7 +25,7 @@ const CitiesList = ({open, handleChooseCity}: ICitiesListProps) => {
       >
       {open &&
           (savedCities.length === 0) ?
-          <Typography component='span'>You don't have any saved city</Typography>
+          <Typography component='span'>{t('noSavedCities')}</Typography>
           :
           <ul
             className='child:transition-all child:duration-300

@@ -1,11 +1,29 @@
 export type LanguageType = 'en'|'ru'|'es'|'dev'
 
-export interface ILanguageResource {
+export type LanguageResource = {
   common:{
-    'changeLang' : string,
-    'en': string,
-    'es': string,
-    'ru': string,
-    'savedCities': string
+    saveCity: string,
+    deleteCity: string,
+    resourceNum: string,
+    minTemp: string,
+    maxTemp: string,
+    mps: string,
+    kph: string,
+  },
+  sidebar:{
+    citySearchPlaceholder: string,
+    changeLang : string,
+    en: string,
+    es: string,
+    ru: string,
+    savedCities: string,
+    noSavedCities: string,
+    onlyEnglish: string
+  },
+  dates:{
+    daysShort: string[],
+    daysFull: string[],
+    monthsShort: string[],
+    monthsFull: string[]
   }
 }

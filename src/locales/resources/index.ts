@@ -3,14 +3,10 @@ import { esResource } from "./es";
 import { ruResource } from "./ru";
 
 
-const resources = {
+const myResources = {
   en: enResource,
-  es:{
-    translation: esResource
-  },
-  ru:{
-    translation: ruResource
-  }
+  es: esResource,
+  ru: ruResource
 };
 
-export default resources;
+export default myResources;

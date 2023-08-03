@@ -4,7 +4,7 @@ import { ICity, CityConvert } from '../../../models/City';
 import { useDispatch, useSelector } from 'react-redux';
 import { modifyOrder } from '../../../redux/citiesState';
 // import Geo from './geo';
-import { Box, Collapse, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Box, Collapse, List, ListItem, ListItemIcon, ListItemText, Tooltip, Typography } from '@mui/material';
 import { ExpandLess, ExpandMore, StarBorder } from '@mui/icons-material';
 import { IAppState } from '../../../models/AppState';
 import { getCityByName } from '../../../services/geoServices';
@@ -18,7 +18,7 @@ import CitiesList from './CitiesList';
 const Sidebar = memo(() => {
   const [citiesSearch, setCitiesSearch] = useState<ICity[]>([]);
 
-  const { t } = useTranslation();
+  const { t } = useTranslation('sidebar');
   
   let delayTimer: NodeJS.Timeout;
 
@@ -57,12 +57,17 @@ const Sidebar = memo(() => {
     >
 
       <ListItem sx={{height:'10%', width:'100%', my:2, position:'relative', p:0}}>
-        <Box
-          component='input'
-          placeholder='🔍 Search for a new city'
-          sx={{ width:'100%', height:'60%', px:1, backgroundColor:'white', color:'black'}}
-          onInput={handleOnInput}
-        />
+        <Tooltip sx={{fontSize:'1.5rem'}} title={t('onlyEnglish')}
+          enterTouchDelay={0} leaveTouchDelay={5000}
+          enterDelay={0} leaveDelay={1000}
+          >
+          <Box
+            component='input'
+            placeholder={`🔍 ${t('citySearchPlaceholder')}`}
+            sx={{ width:'100%', height:'60%', px:1, backgroundColor:'white', color:'black'}}
+            onInput={handleOnInput}
+            />
+        </Tooltip>
         {
           citiesSearch.length > 0 &&
           <List

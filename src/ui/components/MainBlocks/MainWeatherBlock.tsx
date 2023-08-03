@@ -1,10 +1,12 @@
 import { memo, useEffect } from 'react';
-import { getTime, getWeekDay } from '../../../helpers/types.helpers';
+import { getDateAndMonth, getTime, getWeekDay } from '../../../helpers/types.helpers';
 import { IWeatherForecastDay } from '../../../models/WeatherForecastDay';
 import { ICity } from '../../../models/City';
 import { useDispatch } from 'react-redux';
 import { toggleSavedCity } from '../../../redux/citiesState';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { LanguageType } from '../../../models/locales';
 
 // const arr = WeatherConvert.toWeatherForecastDays(weather)
 
@@ -14,6 +16,12 @@ interface MainWeatherType {
 }
 
 const MainWeather = ({ city, selectedDay }: MainWeatherType) => {
+
+  const { t, i18n } = useTranslation();
+
+  const fullWeekDays = t('daysFull',{returnObjects:true,ns:'dates'}) as Array<string>;
+  const monthsFull = t('monthsFull',{returnObjects:true,ns:'dates'}) as Array<string>;
+
 
   const dispatch = useDispatch();
 
@@ -41,7 +49,7 @@ const MainWeather = ({ city, selectedDay }: MainWeatherType) => {
       <span className='material-symbols-outlined text-4xl opacity-50'>{iconName}</span>
       <span className='text-xl'>{valueLabel}</span>
     </div>
-  );
+  );  
 
   return (
     <Paper
@@ -52,14 +60,14 @@ const MainWeather = ({ city, selectedDay }: MainWeatherType) => {
           <Grid container direction="column" sx={{width:{md:'67%'}, justifyContent:"space-between" }}>
 
               <div className='h-1/2 flex justify-around'>
-                <TempValue temp={selectedDay.tempMin} label='Min temp.' />
-                <TempValue temp={selectedDay.tempMax} label='Max temp.' />
+                <TempValue temp={selectedDay.tempMin} label={t('minTemp')} />
+                <TempValue temp={selectedDay.tempMax} label={t('maxTemp')} />
               </div>
               <div className='h-1/2 w-full flex justify-around'>
-                <AdditValues iconName='air' valueLabel={`${selectedDay.windSpeed} mps`} />
+                <AdditValues iconName='air' valueLabel={`${selectedDay.windSpeed} ${t('mps')}`} />
                 <AdditValues iconName='rainy' valueLabel={`${selectedDay.precipProbab} %`} />
                 {
-                  selectedDay.sunrise && selectedDay.sunset &&
+                  (selectedDay.sunrise && selectedDay.sunset) &&
                   <AdditValues iconName='wb_twilight' valueLabel={`${getTime(selectedDay.sunrise)} - ${getTime(selectedDay.sunset)}`} />
                 }
                 {
@@ -80,17 +88,18 @@ const MainWeather = ({ city, selectedDay }: MainWeatherType) => {
             }
             <Typography variant='h5' color='gray'
               children={
-                `${selectedDay?.date?.toString().slice(0, 10).split('-').reverse().join('-')}, ${getWeekDay( new Date(selectedDay?.date).getDay(), 'ru', true)}`}
-              />
+                `${getDateAndMonth(selectedDay.date,monthsFull,i18n.language as LanguageType)}, ${fullWeekDays[new Date(selectedDay.date).getDay()] }`}
+                />
             <Grid container alignItems={{xs:'center', md: 'start'}} justifyContent={{xs:'space-between', md:'start'}} direction={{xs:'row', md:'column'}} wrap='wrap'>
 
               {city.name !== 'GeoPosition' && <Button
+                // ${selectedDay.date.toString().slice(0, 10).split('-').reverse().join('-')},
                 variant='contained'
                 sx={{":hover": { boxShadow: '2px 2px 5px gray' }, width:'fit-content' }}
                 onClick={handleSaveCity}
-                children={<Typography variant='button' children={city.isSaved ? 'Remove from saved' : 'Save'} />}
+                children={<Typography variant='button' children={city.isSaved ? t('deleteCity') : t('saveCity')} />}
                 />}
-              <Typography sx={{height: 'min-content', width:'fit-content' }} >Data from <b>{city.forecastCount}</b> sources</Typography>
+              <Typography sx={{height: 'min-content', width:'fit-content' }} >{t('resourceNum')}: <b>{city.forecastCount}</b></Typography>
             </Grid>
           </Grid>
         </>

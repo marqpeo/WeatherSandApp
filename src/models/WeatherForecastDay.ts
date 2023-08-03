@@ -1,12 +1,12 @@
 export interface IWeatherForecastDay {
-  date:         Date;
+  date:         string;
   precipProbab: number;
   tempMax:      number;
   tempMin:      number;
   weatherType:  string;
   windSpeed:    number;
-  sunrise?:      Date;
-  sunset?:       Date;
+  sunrise?:      string;
+  sunset?:       string;
 }
 
 // Converts JSON strings to/from the type

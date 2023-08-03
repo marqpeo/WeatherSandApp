@@ -15,9 +15,7 @@ const initEpic: MyEpic = (action$, state$) =>
   action$.pipe(
     ofType(CitiesActionTypes.GetSavedCities),
     switchMap(() => {
-      const storage = getFromStorage(StorageKeysCore.Core);
-      console.log(i18n.language as LanguageType);
-      
+      const storage = getFromStorage(StorageKeysCore.Core);      
       if(storage){
         const parsedStorage = JSON.parse(storage) as ICoreState;
         if(parsedStorage.language){

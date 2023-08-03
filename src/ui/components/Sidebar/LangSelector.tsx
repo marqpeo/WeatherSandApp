@@ -9,7 +9,7 @@ import { LanguageType } from '../../../models/locales';
 
 
 const LangSelector = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('sidebar');
   const dispatch = useDispatch();
   const handleChangeLang = (newLang: LanguageType) => {
     i18n.changeLanguage(newLang);
@@ -23,7 +23,7 @@ const LangSelector = () => {
       <Grid>
         {
           supportedLngs.map((lang) => 
-            <ListItemButton onClick={() => handleChangeLang(lang as LanguageType)}>
+            <ListItemButton key={lang} onClick={() => handleChangeLang(lang as LanguageType)}>
               <ListItemText primary={t(lang)}/>
             </ListItemButton>
             )
