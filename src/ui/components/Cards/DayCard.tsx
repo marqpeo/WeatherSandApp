@@ -1,18 +1,17 @@
 import { memo, SyntheticEvent } from "react"
 import { useDispatch, useSelector } from "react-redux";
-import { getDateAndMonth, getWeekDay } from "../../../helpers/types.helpers";
 import { IWeatherForecastDay } from "../../../models/WeatherForecastDay";
 import { selectDay } from "../../../redux/citiesState";
 import { IAppState } from "../../../models/AppState";
 import { Paper } from "@mui/material";
 
 interface DayCardTypes {
-  weatherDay: IWeatherForecastDay
+  weatherDay: IWeatherForecastDay,
+  weekDayText: string,
+  dateText: string,
 }
 
-const DayCard = ({ weatherDay }: DayCardTypes) => {  
-  const date = new Date(weatherDay.date);
-
+const DayCard = ({ weatherDay, weekDayText, dateText }: DayCardTypes) => {
   const dispatch = useDispatch();
 
   const handleSelectDay = (e: SyntheticEvent) => {
@@ -21,8 +20,7 @@ const DayCard = ({ weatherDay }: DayCardTypes) => {
   }
   const dayIsSelected = useSelector<IAppState, boolean>(state =>
     state.cities.currentCity?.selectedDay?.date === weatherDay.date);
-  
-
+    // getWeekDay(, i18n.language as LanguageType)
   return (
     <Paper
       onClick={handleSelectDay}
@@ -32,8 +30,8 @@ const DayCard = ({ weatherDay }: DayCardTypes) => {
       w-full h-full mx-1 cursor-pointer border-2 rounded-lg shadow-none hover:drop-shadow-lg
       ${dayIsSelected ? 'border-temp-deg' : 'hover:border-temp-deg'} `}
     >
-      <span>{getWeekDay(date.getDay(), 'ru')}</span>
-      <span>{getDateAndMonth(date)}</span>
+      <span>{weekDayText}</span>
+      <span>{dateText}</span>
       <div className="flex w-10/12">
         {
           weatherDay.weatherType &&

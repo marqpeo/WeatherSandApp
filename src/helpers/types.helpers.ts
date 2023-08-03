@@ -1,42 +1,15 @@
-export const getWeekDay = (num:number, lang:string, fullName?:boolean) => {
-  const en = [
-    'Sun',
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat',
-  ];
-  const enFull = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
-  return fullName ? enFull[num] :en[num];
+import i18n from "../locales";
+import { LanguageType } from "../models/locales";
+
+export const getWeekDay = (
+  num:number, fullWeekDaysArr:string[], shortWeekDaysArr:string[], fullName?:boolean
+) => {
+  return fullName ? fullWeekDaysArr[num] : shortWeekDaysArr[num];
 }
 
-export const getDateAndMonth = (date:Date) => {
-  const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-  ];
+export const getDateAndMonth = (date:string, monthsArr:string[], lang: LanguageType) =>
+  lang === "ru"
+    ? `${new Date(date).getDate()} ${monthsArr[new Date(date).getMonth()]}`
+    : `${monthsArr[new Date(date).getMonth()]}, ${new Date(date).getDate()}`
 
-  return `${date.getDate()} ${months[date.getMonth()]}`
-}
-
-export const getTime = (date:Date) => new Date(date).toTimeString().slice(0, 5);
+export const getTime = (date:string) => new Date(date).toTimeString().slice(0, 5);

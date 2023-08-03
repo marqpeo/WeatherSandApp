@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { ICoreState } from '../../models/AppState';
 import { saveToStorage } from '../../helpers/localstorage.helpers';
+import { LanguageType } from '../../models/locales';
 
 
 const initialState:ICoreState = {
@@ -8,10 +9,11 @@ const initialState:ICoreState = {
   drawerIsOpen: false,
   loaderTitle: undefined,
   savedListIsOpen: true,
-  errorMessage: undefined
+  errorMessage: undefined,
+  language: 'dev'
 };
 
-enum StorageKeysCore {
+export enum StorageKeysCore {
   Core = 'core'
 };
 
@@ -43,6 +45,10 @@ const coreSlice = createSlice({
     },
     closeMessage(state){
       state.errorMessage = undefined;
+    },
+    setCurrentLanguage(state,{payload}:{payload: LanguageType}){
+      state.language = payload;
+      saveToStorage(state, StorageKeysCore.Core);
     }
   },
   // extraReducers: builder => {},
@@ -56,6 +62,7 @@ export const {
   toggleSavedList,
   showErrorMessage,
   closeMessage,
+  setCurrentLanguage,
 } = coreSlice.actions;
 
 export default coreSlice.reducer;

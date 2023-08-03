@@ -23,15 +23,15 @@ export default function MainLayout() {
     >
       <Grid container wrap='nowrap'>
 
-        <Drawer anchor='right' open={isDrawerOpen} onClose={handleToggleMenu} >
+        <Drawer anchor='right' open={isDrawerOpen} onClose={handleToggleMenu}>
           <Sidebar/>
         </Drawer>
 
-        <Grid item className="item" display={{xs:'none', md:'block'}} md={3}>
+        <Grid item xs={0} md={3} className="item" display={{xs:'none', md:'block'}}>
           <Sidebar />
         </Grid>
         
-        <Grid item className="item" xs={12} md={true} sx={{p:2}}>
+        <Grid item xs={12} md={true} className="item" sx={{p:2}}>
           <MenuButton />
           <Outlet />
         </Grid>
