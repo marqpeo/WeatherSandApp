@@ -1,9 +1,9 @@
 import { memo, useEffect } from 'react';
 import { getDateAndMonth, getTime, getWeekDay } from '../../../helpers/types.helpers';
 import { IWeatherForecastDay } from '../../../models/WeatherForecastDay';
-import { ICity } from '../../../models/City';
+import { ICity, ICityDescLocalized } from '../../../models/City';
 import { useDispatch } from 'react-redux';
-import { toggleSavedCity } from '../../../redux/citiesState';
+import { onToggleSavedCity } from '../../../redux/citiesState';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { LanguageType } from '../../../models/locales';
@@ -19,6 +19,10 @@ const MainWeather = ({ city, selectedDay }: MainWeatherType) => {
 
   const { t, i18n } = useTranslation();
 
+  const lang = i18n.language as LanguageType;
+  const desc = city[lang as keyof ICity] as ICityDescLocalized;
+
+
   const fullWeekDays = t('daysFull',{returnObjects:true,ns:'dates'}) as Array<string>;
   const monthsFull = t('monthsFull',{returnObjects:true,ns:'dates'}) as Array<string>;
 
@@ -27,16 +31,14 @@ const MainWeather = ({ city, selectedDay }: MainWeatherType) => {
 
   const handleSaveCity = (e:any) => {
     e.preventDefault();
-    dispatch(toggleSavedCity(city));
+    dispatch(onToggleSavedCity(city));
   }
 
 
 
   const TempValue = ({ temp, label }: { temp: number, label: string }) => (
     <div className='flex flex-col justify-center items-center'>
-      <Typography
-        // className='text-lg'
-      >{label}</Typography>
+      <Typography>{label}</Typography>
       <Typography
         variant='h2' fontWeight={600}
         className='text-temp-deg'
@@ -81,10 +83,10 @@ const MainWeather = ({ city, selectedDay }: MainWeatherType) => {
 
           <Grid container direction="column" sx={{width:{md:'33%'}, justifyContent:{md: "space-between"} }} >
             <div className='flex items-center'>
-              <Typography variant='h3' sx={{ pr: 2 }}>{city.name}</Typography>
+              <Typography variant='h3' sx={{ pr: 2 }}>{desc.name}</Typography>
             </div>
-            {city.name !== 'GeoPosition' &&
-              <Typography variant='h5' color='GrayText' children={city.country + ', ' + city.desc1} />
+            {desc.name !== 'GeoPosition' &&
+              <Typography variant='h5' color='GrayText' children={desc.country + ', ' + desc.desc1} />
             }
             <Typography variant='h5' color='gray'
               children={
@@ -92,7 +94,7 @@ const MainWeather = ({ city, selectedDay }: MainWeatherType) => {
                 />
             <Grid container alignItems={{xs:'center', md: 'start'}} justifyContent={{xs:'space-between', md:'start'}} direction={{xs:'row', md:'column'}} wrap='wrap'>
 
-              {city.name !== 'GeoPosition' && <Button
+              {desc.name !== 'GeoPosition' && <Button
                 // ${selectedDay.date.toString().slice(0, 10).split('-').reverse().join('-')},
                 variant='contained'
                 sx={{":hover": { boxShadow: '2px 2px 5px gray' }, width:'fit-content' }}

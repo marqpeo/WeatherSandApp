@@ -1,28 +1,42 @@
 import { Epic, combineEpics, ofType } from 'redux-observable';
-import { of, switchMap } from 'rxjs';
+import { concat, map, of, switchMap } from 'rxjs';
 import { IAppState, ICoreState } from '../../models/AppState';
 import { AnyAction } from '@reduxjs/toolkit';
-import { CitiesActionTypes } from '../../models/redux/actions/cities';
 import { getFromStorage } from '../../helpers/localstorage.helpers';
-import { StorageKeysCore, setCurrentLanguage } from '../core';
+import { StorageKeysCore, onSetCurrentLanguage } from '../core';
 import i18n from '../../locales';
 import { CoreActionTypes } from '../../models/redux/actions/core';
 import { LanguageType } from '../../models/locales';
+import { getLocalizedCities, getSavedCities, setCurrentCity } from '../../models/redux/actions/cities';
 
 export type MyEpic = Epic<AnyAction, AnyAction, IAppState>;
 
-const initEpic: MyEpic = (action$, state$) =>
+const initEpic: MyEpic = (action$) =>
   action$.pipe(
-    ofType(CitiesActionTypes.GetSavedCities),
-    switchMap(() => {
-      const storage = getFromStorage(StorageKeysCore.Core);      
+    ofType(CoreActionTypes.InitAction),
+    map(() => {
+      let language = i18n.language as LanguageType;
+      const storage = getFromStorage(StorageKeysCore.Core);   
+      // console.log({language, storage});
+       
       if(storage){
         const parsedStorage = JSON.parse(storage) as ICoreState;
         if(parsedStorage.language){
-          return of(setCurrentLanguage(parsedStorage.language))
+          i18n.changeLanguage(parsedStorage.language);
+          language = parsedStorage.language
         }
-      }
-      return of(setCurrentLanguage(i18n.language as LanguageType));
+      }      
+      return onSetCurrentLanguage(language);
+    }),
+    switchMap((setLangActionType) => {
+      
+      const initActionsArray = [
+        of(getSavedCities())
+      ];
+      return concat(
+        of(setLangActionType),
+        ...initActionsArray
+      );
     })
   );
 
@@ -30,7 +44,11 @@ const changeLanguageEpic: MyEpic = (action$) =>
     action$.pipe(
       ofType(CoreActionTypes.ChangeCurrentLanguage),
       switchMap((action) => 
-        of(setCurrentLanguage(action.payload))
+        concat(
+          of(onSetCurrentLanguage(action.payload)),
+          of(getLocalizedCities()),
+          of(setCurrentCity()),
+          )
       )
     )
 
