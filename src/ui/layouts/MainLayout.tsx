@@ -3,13 +3,13 @@ import Sidebar from '../components/Sidebar';
 import { Container, Drawer, Grid } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { IAppState } from '../../models/AppState';
-import { toggleDrawer } from '../../redux/core';
+import { onToggleDrawer } from '../../redux/core';
 import MenuButton from '../components/Buttons/MenuButton';
 
 export default function MainLayout() {
   const dispatch = useDispatch();
   const handleToggleMenu = () => {
-    dispatch(toggleDrawer());
+    dispatch(onToggleDrawer());
   }
   const isDrawerOpen = useSelector<IAppState, boolean>(({core}) => core.drawerIsOpen);
   

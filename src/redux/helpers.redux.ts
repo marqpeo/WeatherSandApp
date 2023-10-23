@@ -1,18 +1,20 @@
 import { Action } from '@reduxjs/toolkit';
-import { Observable, catchError, concat, of } from 'rxjs';
-import { closeDrawer, hideLoader, showErrorMessage, showLoader } from './core';
+import { EMPTY, Observable, catchError, concat, of } from 'rxjs';
+import { onCloseDrawer, onHideLoader, onShowErrorMessage, onShowLoader } from './core';
+import { IAppState } from '../models/AppState';
 
 export const callWithLoader$ = <T extends Action>(
   action$: Observable<T>,
-  loaderTitle?: string
+  loaderTitle?: string|null,
+  state?: IAppState,
 ) =>
   concat(
-    of(showLoader(loaderTitle)),
-    of(closeDrawer()),
+    of(onShowLoader(loaderTitle)),
+    state?.core?.drawerIsOpen ? of(onCloseDrawer()) : EMPTY,
     action$.pipe(
       catchError(err =>
-        of(showErrorMessage(err))
+        of(onShowErrorMessage(err))
       )
     ),
-    of(hideLoader())
+    of(onHideLoader())
   );
