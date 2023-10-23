@@ -1,4 +1,3 @@
-// REMOVE BEFORE COMMIT 
 const _baseUrl = process.env.NODE_ENV === 'production'
       ? process.env.REACT_APP_API_URL
       : process.env.REACT_APP_API_URL_DEV
@@ -13,6 +12,6 @@ export const methodGet = async (url: string,query?:object) => {
       return await response.json();
     }
   } catch (error) {
-    console.log('Error in method GET : \n  ',error); 
+    console.log('Error in method GET - \n  ',error); 
   }
 };

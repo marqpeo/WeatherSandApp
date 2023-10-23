@@ -3,7 +3,7 @@ import { IconButton, SxProps, Theme } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import KeyboardTabIcon from '@mui/icons-material/KeyboardTab';
 import { useDispatch, useSelector } from 'react-redux';
-import { onToggleDrawer } from '../../../redux/core';
+import { toggleDrawer } from '../../../redux/core';
 import { useNavigate } from 'react-router-dom';
 import { IAppState } from '../../../models/AppState';
 
@@ -22,7 +22,7 @@ const MenuButton = ({onToggleMenu, sx}:IMenuButtonProps) => {
 
   const handleToggleMenu = () => onToggleMenu
     ? onToggleMenu()
-    : dispatch(onToggleDrawer());
+    : dispatch(toggleDrawer());
     
   useEffect(() => {
     const handleBackButton = () => {
