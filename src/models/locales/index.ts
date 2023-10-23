@@ -1,29 +1,32 @@
-export type LanguageType = 'en'|'ru'|'es'|'dev'
+export type LanguageType = 'en'|'es';
 
 export type LanguageResource = {
   common:{
-    saveCity: string,
     deleteCity: string,
-    resourceNum: string,
-    minTemp: string,
-    maxTemp: string,
-    mps: string,
     kph: string,
+    maxTemp: string,
+    minTemp: string,
+    mps: string,
+    resourceNum: string,
+    saveCity: string,
   },
   sidebar:{
-    citySearchPlaceholder: string,
     changeLang : string,
+    citySearchPlaceholder: string,
     en: string,
     es: string,
-    ru: string,
-    savedCities: string,
     noSavedCities: string,
     onlyEnglish: string
+    ru: string,
+    savedCities: string,
   },
+  mainPage:{
+    welcomeHeader:string;
+  }
   dates:{
-    daysShort: string[],
     daysFull: string[],
-    monthsShort: string[],
+    daysShort: string[],
     monthsFull: string[]
+    monthsShort: string[],
   }
 }

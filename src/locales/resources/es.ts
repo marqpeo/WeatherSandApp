@@ -21,6 +21,9 @@ export const esResource: LanguageResource = {
     citySearchPlaceholder: 'Búsqueda de ciudades',
     onlyEnglish: 'Temporalmente, la búsqueda de ciudades solo está disponible en inglés'
   },
+  mainPage:{
+    welcomeHeader: 'Busca una ciudad para encontrar su tiempo!'
+  },
   dates:{
     daysShort:['Dom','Lun','Mar','Mie','Jue','Vie','Sáb'],
     daysFull:['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],

@@ -1,4 +1,4 @@
-import i18n from "../locales";
+// import i18n from "../locales";
 import { LanguageType } from "../models/locales";
 
 export const getWeekDay = (
@@ -8,8 +8,8 @@ export const getWeekDay = (
 }
 
 export const getDateAndMonth = (date:string, monthsArr:string[], lang: LanguageType) =>
-  lang === "ru"
-    ? `${new Date(date).getDate()} ${monthsArr[new Date(date).getMonth()]}`
-    : `${monthsArr[new Date(date).getMonth()]}, ${new Date(date).getDate()}`
+  `${monthsArr[new Date(date).getMonth()]}, ${new Date(date).getDate()}`
+  // lang === "ru"
+  //   ? `${new Date(date).getDate()} ${monthsArr[new Date(date).getMonth()]}`
 
 export const getTime = (date:string) => new Date(date).toTimeString().slice(0, 5);
