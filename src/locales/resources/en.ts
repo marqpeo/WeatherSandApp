@@ -21,9 +21,6 @@ export const enResource: LanguageResource = {
     citySearchPlaceholder: 'Search for a new city',
     onlyEnglish: ''
   },
-  mainPage:{
-    welcomeHeader: 'Try to search any city to find out the weather!'
-  },
   dates:{
     daysShort:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
     daysFull:['Sunday', 'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
