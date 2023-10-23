@@ -1,7 +1,7 @@
 import { memo, SyntheticEvent } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import { IWeatherForecastDay } from "../../../models/WeatherForecastDay";
-import { onSelectDay } from "../../../redux/citiesState";
+import { selectDay } from "../../../redux/citiesState";
 import { IAppState } from "../../../models/AppState";
 import { Paper } from "@mui/material";
 
@@ -16,7 +16,7 @@ const DayCard = ({ weatherDay, weekDayText, dateText }: DayCardTypes) => {
 
   const handleSelectDay = (e: SyntheticEvent) => {
     e.preventDefault();
-    dispatch(onSelectDay(weatherDay.date));
+    dispatch(selectDay(weatherDay.date));
   }
   const dayIsSelected = useSelector<IAppState, boolean>(state =>
     state.cities.currentCity?.selectedDay?.date === weatherDay.date);

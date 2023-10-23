@@ -10,7 +10,7 @@ const initialState:ICoreState = {
   loaderTitle: undefined,
   savedListIsOpen: true,
   errorMessage: undefined,
-  language: 'en'
+  language: 'dev'
 };
 
 export enum StorageKeysCore {
@@ -21,47 +21,48 @@ const coreSlice = createSlice({
   name: 'core',
   initialState,
   reducers: {
-    onShowLoader(state, {payload}){
+    showLoader(state, {payload}){
       state.loaderTitle = payload
       state.loading = true;
     },
-    onHideLoader(state){
+    hideLoader(state){
       state.loading = false;
     },
-    onToggleDrawer(state){
+    toggleDrawer(state){
       state.drawerIsOpen = !state.drawerIsOpen;
       saveToStorage(state, StorageKeysCore.Core)
     },
-    onCloseDrawer(state){
+    closeDrawer(state){
       state.drawerIsOpen = false;
       saveToStorage(state, StorageKeysCore.Core)
     },
-    onToggleSavedList(state){
+    toggleSavedList(state){
       state.savedListIsOpen = !state.savedListIsOpen;
       saveToStorage(state, StorageKeysCore.Core)
     },
-    onShowErrorMessage(state, {payload}){
+    showErrorMessage(state, {payload}){
       state.errorMessage = payload;
     },
-    onCloseMessage(state){
+    closeMessage(state){
       state.errorMessage = undefined;
     },
-    onSetCurrentLanguage(state,{payload}:{payload: LanguageType}){
-      state.language = payload
+    setCurrentLanguage(state,{payload}:{payload: LanguageType}){
+      state.language = payload;
       saveToStorage(state, StorageKeysCore.Core);
     }
-  }
+  },
+  // extraReducers: builder => {},
 });
 
 export const {
-  onHideLoader,
-  onShowLoader,
-  onToggleDrawer,
-  onCloseDrawer,
-  onToggleSavedList,
-  onShowErrorMessage,
-  onCloseMessage,
-  onSetCurrentLanguage,
+  hideLoader,
+  showLoader,
+  toggleDrawer,
+  closeDrawer,
+  toggleSavedList,
+  showErrorMessage,
+  closeMessage,
+  setCurrentLanguage,
 } = coreSlice.actions;
 
 export default coreSlice.reducer;
