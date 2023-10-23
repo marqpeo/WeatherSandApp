@@ -7,7 +7,7 @@ export interface IAppState {
 }
 
 export interface ICitiesState {
-  currentCity?: ICity | null;
+  currentCity?: ICity;
   citiesCache: ICity[];
 }
 
