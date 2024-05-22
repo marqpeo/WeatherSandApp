@@ -15,12 +15,12 @@ Well, I really hope so, because this app will help you to know the average weath
 
 ## 🗓️ Roadmap
 
-- [ ]   Implement of using geolocation
-- [ ]   Adapt desing to mobile version
-- [ ]   Add more data about the city - elevation, timezone, and something useful more.
-- [ ]   Add localization
-- [ ]   Theming
+- [x]   ~~Add localization~~
+- [x]   ~~Adapt desing to mobile version~~
+- [ ]   Implement geolocation using
 - [ ]   Improve geoposition's data - name of city, country, etc.
+- [ ]   Add more data about the city - elevation, timezone, and something useful more.
+- [ ]   Theming
 - [ ]   ?
 
 <p align="right"><a href="#top">back to top</a></p>
