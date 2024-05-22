@@ -1,5 +1,7 @@
 <div id="top"></div>
 
+### (Stay tuned, the app is in the resurrection process)
+
 # WeatherSandApp
 
 ## Idea & Description
